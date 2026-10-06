@@ -6,6 +6,7 @@ import com.ginomarin.persistencia.model.Duenno;
 import com.ginomarin.persistencia.service.DuennoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,12 +34,14 @@ public class DuennoController {
         this.duennoMapper = duennoMapper;
     }
 
+    @PreAuthorize("hasAuthority('duenno:leer')")
     @GetMapping
     public List<DuennoDTO> findAll() {
         log.info("Listando todos los duennos");
         return duennoMapper.toDtoList(duennoService.findAll());
     }
 
+    @PreAuthorize("hasAuthority('duenno:leer')")
     @GetMapping("/")
     public ResponseEntity<DuennoDTO> findDuennoByCedula(@RequestParam String cedula){
         log.info("Buscando duenno por cedula");
@@ -48,12 +51,14 @@ public class DuennoController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasAuthority('duenno:leer')")
     @GetMapping("/{id}")
     public ResponseEntity<DuennoDTO> findById(@PathVariable Long id) {
         log.info("Buscando duenno con id {}", id);
         return ResponseEntity.of(duennoService.findById(id).map(duennoMapper::toDto));
     }
 
+    @PreAuthorize("hasAuthority('duenno:escribir')")
     @PostMapping("/")
     public ResponseEntity<DuennoDTO> create(@RequestBody DuennoDTO duennoDTO) {
         log.info("Creando duenno");
@@ -65,12 +70,14 @@ public class DuennoController {
         return ResponseEntity.created(location).body(duennoMapper.toDto(creado));
     }
 
+    @PreAuthorize("hasAuthority('duenno:escribir')")
     @PutMapping("/{id}")
     public ResponseEntity<DuennoDTO> update(@PathVariable Long id, @RequestBody DuennoDTO duennoDTO) {
         log.info("Actualizando duenno con id {}", id);
         return ResponseEntity.of(duennoService.update(id, duennoMapper.toEntity(duennoDTO)).map(duennoMapper::toDto));
     }
 
+    @PreAuthorize("hasAuthority('duenno:eliminar')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         log.info("Eliminando duenno con id {}", id);
@@ -79,12 +86,14 @@ public class DuennoController {
                 : ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasAuthority('duenno:escribir')")
     @PutMapping("/{id}/perros/{perroId}")
     public ResponseEntity<DuennoDTO> agregarPerro(@PathVariable Long id, @PathVariable Long perroId) {
         log.info("Asignando perro {} al duenno {}", perroId, id);
         return ResponseEntity.of(duennoService.agregarPerro(id, perroId).map(duennoMapper::toDto));
     }
 
+    @PreAuthorize("hasAuthority('duenno:escribir')")
     @DeleteMapping("/{id}/perros/{perroId}")
     public ResponseEntity<DuennoDTO> quitarPerro(@PathVariable Long id, @PathVariable Long perroId) {
         log.info("Quitando perro {} del duenno {}", perroId, id);

@@ -1,0 +1,69 @@
+### =====================================================================
+### Demo de seguridad con Keycloak (cliente HTTP de IntelliJ)
+### Ejecutar en orden: primero pedir el token, luego llamar endpoints.
+### Usuarios: ana/ana123 (ADMIN), victor/victor123 (VETERINARIO), carla/carla123 (CLIENTE)
+### =====================================================================
+
+### 0. Login a través de la API de Spring (reenvía a Keycloak). Cambiar username/password para otros usuarios
+POST http://localhost:8080/api/v1/auth/login
+Content-Type: application/json
+
+{"username": "ana", "password": "ana123"}
+
+> {% client.global.set("token", response.body.access_token); %}
+
+### 0b. Login con contraseña incorrecta -> 401
+POST http://localhost:8080/api/v1/auth/login
+Content-Type: application/json
+
+{"username": "ana", "password": "incorrecta"}
+
+### 1. Alternativa: pedir el token directamente a Keycloak (lo mismo que hace /auth/login por dentro)
+POST http://localhost:8180/realms/veterinaria/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&client_id=persistencia-api&username=ana&password=ana123
+
+> {% client.global.set("token", response.body.access_token); %}
+
+### 2. Público (sin token) -> 200
+GET http://localhost:8080/api/v1/demo/publico
+
+### 3. Sin token -> 401 Unauthorized
+GET http://localhost:8080/api/v1/demo/yo
+
+### 4. ¿Quién soy? ¿Qué roles y permisos ve Spring?
+GET http://localhost:8080/api/v1/demo/yo
+Authorization: Bearer {{token}}
+
+### 5. Solo ADMIN (hasRole)
+GET http://localhost:8080/api/v1/demo/admin
+Authorization: Bearer {{token}}
+
+### 6. ADMIN o VETERINARIO (hasAnyRole)
+GET http://localhost:8080/api/v1/demo/personal
+Authorization: Bearer {{token}}
+
+### 7. Solo VETERINARIO (@Secured) - ¡ana es ADMIN y aun así recibe 403!
+GET http://localhost:8080/api/v1/demo/veterinario
+Authorization: Bearer {{token}}
+
+### 8. Requiere el permiso duenno:eliminar (hasAuthority)
+GET http://localhost:8080/api/v1/demo/permiso-eliminar
+Authorization: Bearer {{token}}
+
+### 9. Perfil propio o ADMIN (SpEL con parámetros)
+GET http://localhost:8080/api/v1/demo/perfil/carla
+Authorization: Bearer {{token}}
+
+### 10. Endpoints reales del proyecto
+GET http://localhost:8080/api/v1/duenno
+Authorization: Bearer {{token}}
+
+###
+GET http://localhost:8080/api/v1/perro/
+Authorization: Bearer {{token}}
+
+### 11. Eliminar duenno: solo quien tenga duenno:eliminar (ADMIN). Otros -> 403
+DELETE http://localhost:8080/api/v1/duenno/9999
+Authorization: Bearer {{token}}
