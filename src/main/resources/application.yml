@@ -20,7 +20,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8180/realms/veterinaria
+          issuer-uri: http://localhost:8180/realms/tienda
 
 # Cliente de Keycloak donde viven los permisos (client roles)
 keycloak:

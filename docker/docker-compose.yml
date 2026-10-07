@@ -27,7 +27,7 @@ services:
     ports:
       - "8180:8080"
     volumes:
-      - ./keycloak/realm-veterinaria.json:/opt/keycloak/data/import/realm-veterinaria.json:ro
+      - ./keycloak/realm-tienda.json:/opt/keycloak/data/import/realm-tienda.json:ro
       - ./keycloak/start.sh:/opt/keycloak/start.sh:ro
 
 volumes:

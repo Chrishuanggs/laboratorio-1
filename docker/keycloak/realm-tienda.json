@@ -1,0 +1,53 @@
+{
+  "realm": "tienda",
+  "enabled": true,
+  "sslRequired": "none",
+  "accessTokenLifespan": 900,
+  "roles": {
+    "realm": [
+      {
+        "name": "SUPER-ADMIN-ROLE",
+        "description": "Administrador: puede hacer todo y de todo"
+      },
+      {
+        "name": "USER",
+        "description": "Usuario de la tienda o comprador."
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "persistencia-api",
+      "name": "API de Persistencia (Spring Boot)",
+      "enabled": true,
+      "publicClient": true,
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": true,
+      "redirectUris": ["http://localhost:*", "https://oauth.pstmn.io/v1/callback"],
+      "webOrigins": ["+"],
+      "fullScopeAllowed": true
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "email": "admin@tienda.local",
+      "emailVerified": true,
+      "firstName": "Super",
+      "lastName": "Admin",
+      "credentials": [{ "type": "password", "value": "admin123", "temporary": false }],
+      "realmRoles": ["SUPER-ADMIN-ROLE"]
+    },
+    {
+      "username": "chris",
+      "enabled": true,
+      "email": "chris@tienda.local",
+      "emailVerified": true,
+      "firstName": "Chris",
+      "lastName": "User",
+      "credentials": [{ "type": "password", "value": "user123", "temporary": false }],
+      "realmRoles": ["USER"]
+    }
+  ]
+}
