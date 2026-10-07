@@ -14,10 +14,6 @@ spring:
     hibernate:
       ddl-auto: validate
 
-  ai:
-    openai:
-      api-key: ${OPENAI_API_KEY}
-
   # La API valida los JWT emitidos por este realm de Keycloak.
   # Spring descarga las llaves públicas desde <issuer-uri>/.well-known/openid-configuration
   security:
