@@ -4,8 +4,11 @@ import com.ginomarin.persistencia.dto.CategoriaDTO;
 import com.ginomarin.persistencia.mappers.CategoriaMapper;
 import com.ginomarin.persistencia.model.Categoria;
 import com.ginomarin.persistencia.repository.CategoriaRepository;
+import com.ginomarin.persistencia.repository.ProductoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +19,7 @@ public class CategoriaService {
 
     private final CategoriaRepository categoriaRepository;
     private final CategoriaMapper categoriaMapper;
+    private final ProductoRepository productoRepository;
 
     public List<CategoriaDTO> listar() {
         return categoriaRepository.findAll()
@@ -37,6 +41,9 @@ public class CategoriaService {
     public boolean eliminar(Long id) {
         if (!categoriaRepository.existsById(id)) {
             return false;
+        }
+        if (productoRepository.existsByCategoriaId(id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "No se puede eliminar la categoria porque tiene productos asociados");
         }
         categoriaRepository.deleteById(id);
         return true;
